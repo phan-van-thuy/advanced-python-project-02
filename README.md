@@ -13,7 +13,7 @@ This project generates memes with quotes using a web application and command lin
 
 1. Clone the repository:
     ```sh
-    git clone <repository_url>
+    git clone https://github.com/phan-van-thuy/advanced-python-project-02.git
     cd advanced-python-project-02
     ```
 
@@ -46,7 +46,7 @@ This project generates memes with quotes using a web application and command lin
 
 1. Use the `meme.py` script to generate a meme:
     ```sh
-    python meme.py --path ./_data/photos/dog/xander_1.jpg --body "Sample Quote" --author "Author"
+    python meme.py --path ./_data/photos/vietnam/xander_1.jpg --body "Sample Quote" --author "Author"
     ```
 
 ## Project Structure
@@ -72,7 +72,7 @@ advanced-python-project-02/
 │ │ ├── DogQuotesPDF.pdf
 │ │ └── DogQuotesTXT.txt
 │ ├── photos/
-│ │ └── dog/
+│ │ └── vietnam/
 │ │ ├── xander_1.jpg
 │ │ ├── xander_2.jpg
 │ │ ├── xander_3.jpg

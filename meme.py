@@ -5,7 +5,17 @@ from QuoteEngine import TextIngestor, DocxIngestor, PDFIngestor, CSVIngestor, Qu
 from MemeEngine import MemeEngine
 
 def generate_meme(path=None, body=None, author=None):
-    """Generate a meme given an path and a quote."""
+    """
+    Generate a meme given an image path and a quote.
+    
+    Args:
+        path (str): Path to the image file.
+        body (str): Quote body text.
+        author (str): Quote author.
+        
+    Returns:
+        str: Path to the generated meme image.
+    """
     img = None
     quote = None
 
