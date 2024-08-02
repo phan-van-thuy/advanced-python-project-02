@@ -1,20 +1,25 @@
 import os
 import random
 import argparse
-from QuoteEngine import TextIngestor, DocxIngestor, PDFIngestor, CSVIngestor, QuoteModel
+from QuoteEngine import (
+    TextIngestor, DocxIngestor, PDFIngestor, CSVIngestor, QuoteModel
+)
 from MemeEngine import MemeEngine
 
 def generate_meme(path=None, body=None, author=None):
     """
     Generate a meme given an image path and a quote.
-    
+
     Args:
-        path (str): Path to the image file.
-        body (str): Quote body text.
-        author (str): Quote author.
-        
+        path (str, optional): Path to the image file. Defaults to None.
+        body (str, optional): Quote body text. Defaults to None.
+        author (str, optional): Quote author. Defaults to None.
+
     Returns:
         str: Path to the generated meme image.
+
+    Raises:
+        Exception: If body is provided but author is missing.
     """
     img = None
     quote = None
@@ -27,10 +32,12 @@ def generate_meme(path=None, body=None, author=None):
         img = path
 
     if body is None:
-        quote_files = ['./_data/DogQuotes/DogQuotesTXT.txt',
-                       './_data/DogQuotes/DogQuotesDOCX.docx',
-                       './_data/DogQuotes/DogQuotesPDF.pdf',
-                       './_data/DogQuotes/DogQuotesCSV.csv']
+        quote_files = [
+            './_data/DogQuotes/DogQuotesTXT.txt',
+            './_data/DogQuotes/DogQuotesDOCX.docx',
+            './_data/DogQuotes/DogQuotesPDF.pdf',
+            './_data/DogQuotes/DogQuotesCSV.csv'
+        ]
         quotes = []
         for file in quote_files:
             if TextIngestor.can_ingest(file):
@@ -44,7 +51,7 @@ def generate_meme(path=None, body=None, author=None):
         quote = random.choice(quotes)
     else:
         if author is None:
-            raise Exception('Author Required if Body is Used')
+            raise Exception('Author required if body is used.')
         quote = QuoteModel(body, author)
 
     meme = MemeEngine('./tmp')

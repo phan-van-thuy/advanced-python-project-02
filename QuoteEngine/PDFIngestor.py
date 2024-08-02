@@ -10,7 +10,15 @@ class PDFIngestor(IngestorInterface):
 
     @classmethod
     def parse(cls, path: str) -> list:
-        """Parse a PDF file and return a list of QuoteModel objects."""
+        """
+        Parse a PDF file and return a list of QuoteModel objects.
+
+        Args:
+            path (str): Path to the PDF file.
+
+        Returns:
+            list: List of QuoteModel objects.
+        """
         if not cls.can_ingest(path):
             raise Exception('Cannot ingest exception')
 

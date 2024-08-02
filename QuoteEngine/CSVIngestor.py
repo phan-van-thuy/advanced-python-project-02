@@ -9,7 +9,15 @@ class CSVIngestor(IngestorInterface):
 
     @classmethod
     def parse(cls, path: str) -> list:
-        """Parse a CSV file and return a list of QuoteModel objects."""
+        """
+        Parse a CSV file and return a list of QuoteModel objects.
+
+        Args:
+            path (str): Path to the CSV file.
+
+        Returns:
+            list: List of QuoteModel objects.
+        """
         if not cls.can_ingest(path):
             raise Exception('Cannot ingest exception')
 
