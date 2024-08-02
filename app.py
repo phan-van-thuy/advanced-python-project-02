@@ -1,20 +1,23 @@
-from flask import Flask, render_template, request, abort, redirect, url_for
+from flask import Flask, render_template, request
 import requests
 from MemeEngine import MemeEngine
 from QuoteEngine import TextIngestor, DocxIngestor, PDFIngestor, CSVIngestor, QuoteModel
 import os
 from PIL import UnidentifiedImageError
-import random  # Import the random module
+import random
 
 app = Flask(__name__)
 meme = MemeEngine('./static')
 
+
 def setup():
     """Load all resources."""
-    quote_files = ['./_data/DogQuotes/DogQuotesTXT.txt',
-                   './_data/DogQuotes/DogQuotesDOCX.docx',
-                   './_data/DogQuotes/DogQuotesPDF.pdf',
-                   './_data/DogQuotes/DogQuotesCSV.csv']
+    quote_files = [
+        './_data/DogQuotes/DogQuotesTXT.txt',
+        './_data/DogQuotes/DogQuotesDOCX.docx',
+        './_data/DogQuotes/DogQuotesPDF.pdf',
+        './_data/DogQuotes/DogQuotesCSV.csv'
+    ]
 
     quotes = []
     for file in quote_files:
@@ -32,7 +35,9 @@ def setup():
 
     return quotes, imgs
 
+
 quotes, imgs = setup()
+
 
 @app.route('/')
 def meme_rand():
@@ -42,10 +47,12 @@ def meme_rand():
     path = meme.make_meme(img, quote.body, quote.author)
     return render_template('meme.html', path=path)
 
+
 @app.route('/create', methods=['GET'])
 def meme_form():
     """User input for meme information."""
     return render_template('meme_form.html')
+
 
 @app.route('/create', methods=['POST'])
 def meme_post():
@@ -55,6 +62,8 @@ def meme_post():
     author = request.form['author']
 
     img_path = './static/temp_image.jpg'
+    error_message = None
+
     try:
         response = requests.get(image_url)
         response.raise_for_status()  # Raise an exception for HTTP errors
@@ -65,18 +74,17 @@ def meme_post():
         path = meme.make_meme(img_path, body, author)
         os.remove(img_path)
         return render_template('meme.html', path=path)
-    
-    except requests.RequestException as e:
-        print(f"Error with image URL: {e}")
-        os.remove(img_path)
+
+    except requests.RequestException:
+        error_message = "Sorry, invalid image URL, please try again."
+    except UnidentifiedImageError:
         error_message = "Sorry, the URL does not contain a valid image, please try another URL."
-    
-    except UnidentifiedImageError as e:
-        print(f"Error with image file: {e}")
-        os.remove(img_path)
-        error_message = "Sorry, the URL does not contain a valid image, please try another URL."
+    finally:
+        if os.path.exists(img_path):
+            os.remove(img_path)
 
     return render_template('meme_form.html', error=error_message)
+
 
 if __name__ == "__main__":
     app.run()
