@@ -1,13 +1,12 @@
-import random
-import os
+from flask import Flask, render_template, request, abort, redirect, url_for
 import requests
-from flask import Flask, render_template, request, abort
-from PIL import Image  # Import Image from PIL
-from QuoteEngine import TextIngestor, DocxIngestor, PDFIngestor, CSVIngestor, QuoteModel
 from MemeEngine import MemeEngine
+from QuoteEngine import TextIngestor, DocxIngestor, PDFIngestor, CSVIngestor, QuoteModel
+import os
+from PIL import UnidentifiedImageError
+import random  # Import the random module
 
 app = Flask(__name__)
-
 meme = MemeEngine('./static')
 
 def setup():
@@ -56,30 +55,28 @@ def meme_post():
     author = request.form['author']
 
     img_path = './static/temp_image.jpg'
-    
     try:
         response = requests.get(image_url)
-        if response.status_code == 200:
-            with open(img_path, 'wb') as file:
-                file.write(response.content)
-            
-            try:
-                # Verify the image is valid
-                img = Image.open(img_path)
-                img.verify()
-            except (IOError, SyntaxError) as e:
-                print(f'Invalid image file: {e}')
-                os.remove(img_path)
-                abort(400, description="The provided URL did not point to a valid image file.")
-            
-            path = meme.make_meme(img_path, body, author)
-            os.remove(img_path)
-            return render_template('meme.html', path=path)
-        else:
-            abort(400, description="Failed to download image from the provided URL.")
+        response.raise_for_status()  # Raise an exception for HTTP errors
+        with open(img_path, 'wb') as file:
+            file.write(response.content)
+
+        # Attempt to create a meme with the downloaded image
+        path = meme.make_meme(img_path, body, author)
+        os.remove(img_path)
+        return render_template('meme.html', path=path)
+    
     except requests.RequestException as e:
-        print(f'Request failed: {e}')
-        abort(400, description="Failed to fetch image from the URL.")
+        print(f"Error with image URL: {e}")
+        os.remove(img_path)
+        error_message = "Sorry, the URL does not contain a valid image, please try another URL."
+    
+    except UnidentifiedImageError as e:
+        print(f"Error with image file: {e}")
+        os.remove(img_path)
+        error_message = "Sorry, the URL does not contain a valid image, please try another URL."
+
+    return render_template('meme_form.html', error=error_message)
 
 if __name__ == "__main__":
     app.run()
